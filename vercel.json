@@ -1,0 +1,15 @@
+{
+  "name": "km-checker-pro",
+  "version": 2,
+  "public": true,
+  "buildCommand": "echo 'Static site'",
+  "outputDirectory": "./",
+  "framework": "static",
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/"
+    }
+  ],
+  "env": {}
+}

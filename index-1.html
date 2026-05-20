@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KM Checker - Vehicle Mileage Verification System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+        :root {
+            --bg-primary: #0B0F14;
+            --bg-secondary: #11161D;
+            --border: #1E2935;
+            --accent: #00D084;
+            --warning: #FFB020;
+            --danger: #FF5D5D;
+            --text: #EAF2FF;
+            --text-secondary: #8FA3B8;
+            --success: #00D084;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* HEADER SERIO */
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-title {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        .header-badges {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* GRID LAYOUT */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .grid-full {
+            grid-column: 1 / -1;
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(0, 208, 132, 0.1);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* INPUTS */
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(0, 208, 132, 0.1);
+        }
+
+        /* BUTTONS */
+        button {
+            padding: 10px 16px;
+            background: var(--accent);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        button:hover {
+            background: #00b870;
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        button.secondary {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+        }
+
+        button.secondary:hover {
+            background: rgba(0, 208, 132, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* STATUS */
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: rgba(0, 208, 132, 0.1);
+            border: 1px solid var(--accent);
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .status.disconnected {
+            background: rgba(255, 93, 93, 0.1);
+            border-color: var(--danger);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            animation: pulse 2s infinite;
+        }
+
+        .status.disconnected .status-dot {
+            background: var(--danger);
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* PROGRESS SECTION */
+        .progress-section {
+            display: none;
+            margin: 24px 0;
+        }
+
+        .progress-section.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .progress-title {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-items {
+            margin-bottom: 16px;
+        }
+
+        .progress-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            font-size: 13px;
+            color: var(--text);
+            margin-bottom: 6px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .progress-item.success {
+            color: var(--accent);
+        }
+
+        .progress-item.warning {
+            color: var(--warning);
+        }
+
+        .progress-item.error {
+            color: var(--danger);
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .progress-percentage {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-align: right;
+        }
+
+        /* MODULES TABLE */
+        .modules-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 13px;
+        }
+
+        .modules-table th {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .modules-table td {
+            border: 1px solid var(--border);
+            padding: 12px;
+            color: var(--text);
+        }
+
+        .modules-table tr:hover {
+            background: rgba(0, 208, 132, 0.05);
+        }
+
+        .module-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-icon {
+            font-size: 16px;
+        }
+
+        .status-icon.success { color: var(--accent); }
+        .status-icon.warning { color: var(--warning); }
+        .status-icon.error { color: var(--text-secondary); }
+
+        /* INFO BOX */
+        .info-box {
+            background: var(--bg-primary);
+            border-left: 3px solid var(--accent);
+            border-radius: 4px;
+            padding: 16px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin: 20px 0;
+        }
+
+        .info-box strong {
+            color: var(--text);
+        }
+
+        /* STEPS SECTION */
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .step {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .step:hover {
+            border-color: var(--accent);
+        }
+
+        .step-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 8px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .step-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .step-description {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        /* RESULTS SUMMARY */
+        .results-summary {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 20px;
+            margin: 20px 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .summary-item {
+            text-align: center;
+        }
+
+        .summary-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 4px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .summary-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* FOOTER */
+        footer {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        footer p {
+            margin-bottom: 8px;
+        }
+
+        /* DISCLAIMER */
+        .disclaimer {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 16px;
+            font-size: 12px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-top: 40px;
+        }
+
+        .disclaimer strong {
+            color: var(--text);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <header>
+            <div class="header-title">KM CHECKER</div>
+            <div class="header-subtitle">Vehicle Mileage Verification System</div>
+            <div class="header-badges">
+                <div class="badge">SAFE READ MODE</div>
+                <div class="badge">MULTI-MODULE ANALYSIS</div>
+                <div class="badge">OBD2 COMPATIBLE</div>
+            </div>
+        </header>
+
+        <!-- HOW IT WORKS -->
+        <section class="grid-full" style="margin-bottom: 40px;">
+            <div class="card">
+                <div class="card-title">Cómo Funciona</div>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-title">Conecta</div>
+                        <div class="step-description">USB OBD2 adaptador al puerto</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-title">Escaneamos</div>
+                        <div class="step-description">Buscamos módulos disponibles</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-title">Comparamos</div>
+                        <div class="step-description">Analizamos coherencia de datos</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-title">Verificamos</div>
+                        <div class="step-description">Detectamos inconsistencias</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-title">Resultados</div>
+                        <div class="step-description">Informe transparente</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MAIN GRID -->
+        <div class="grid-2">
+            <!-- CONNECTION PANEL -->
+            <div class="card">
+                <div class="card-title">Conexión USB</div>
+                <div class="status disconnected" id="connectionStatus">
+                    <span class="status-dot"></span>
+                    <span id="statusText">Desconectado</span>
+                </div>
+
+                <div class="input-group">
+                    <label>Tipo de Conexión</label>
+                    <select id="connectionType">
+                        <option value="serial">Puerto Serial (USB)</option>
+                        <option value="sim" selected>Simulación (Demo)</option>
+                    </select>
+                </div>
+
+                <div class="button-group">
+                    <button id="connectBtn" onclick="connectDevice()">Conectar</button>
+                    <button class="secondary" id="disconnectBtn" onclick="disconnectDevice()" disabled>Desconectar</button>
+                </div>
+
+                <div class="info-box">
+                    <strong>💡 ELM327:</strong> Dispositivo USB OBD2. Compatible con la mayoría de vehículos 1996+. Compra versión V2.1 o superior para mejor estabilidad.
+                </div>
+            </div>
+
+            <!-- VEHICLE INFO -->
+            <div class="card">
+                <div class="card-title">Información del Vehículo</div>
+                <div class="input-group">
+                    <label>VIN (Número de Identificación)</label>
+                    <input type="text" id="vinInput" placeholder="VIN no detectado">
+                </div>
+                <div class="input-group">
+                    <label>ECU ID</label>
+                    <input type="text" id="ecuInput" placeholder="ECU no detectado">
+                </div>
+                <button onclick="readVehicleInfo()" id="readInfoBtn" disabled>Leer Información</button>
+            </div>
+
+            <!-- SCANNING PANEL (FULL WIDTH) -->
+            <div class="card grid-full">
+                <div class="card-title">Análisis de Módulos</div>
+                
+                <!-- Progress Section -->
+                <div class="progress-section" id="progressSection">
+                    <div class="progress-title" id="progressTitle">Escaneando módulos...</div>
+                    <div class="progress-items" id="progressItems"></div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    <div class="progress-percentage" id="progressPercentage">0%</div>
+                </div>
+
+                <!-- Results Summary -->
+                <div id="resultsSummary" style="display: none;">
+                    <div class="results-summary">
+                        <div class="summary-item">
+                            <div class="summary-value" id="modulesDetected">0</div>
+                            <div class="summary-label">Detectados</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-value" id="modulesAccessible">0</div>
+                            <div class="summary-label">Accesibles</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-value" id="modulesRestricted">0</div>
+                            <div class="summary-label">Protegidos</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-value" id="coherenceLevel">--</div>
+                            <div class="summary-label">Coherencia</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modules Table -->
+                <table class="modules-table" id="modulesTable" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>Módulo</th>
+                            <th>Estado</th>
+                            <th>Kilómetros</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modulesList">
+                    </tbody>
+                </table>
+
+                <!-- Important Info -->
+                <div class="info-box">
+                    <strong>ℹ️ Información Importante:</strong><br>
+                    No poder acceder a un módulo NO significa manipulación. Algunos fabricantes restringen el acceso según:
+                    <br>• Modelo y año del vehículo
+                    <br>• Protocolo de comunicación
+                    <br>• Nivel de acceso del adaptador
+                    <br>Esta herramienta SOLO LEE datos. Es 100% segura y no puede dañar el vehículo.
+                </div>
+
+                <div class="button-group">
+                    <button id="scanBtn" onclick="startScan()" disabled>Iniciar Escaneo Completo</button>
+                    <button class="secondary" id="analyzeBtn" onclick="analyzeResults()" disabled>Analizar Resultados</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- DISCLAIMER -->
+        <div class="disclaimer">
+            <strong>⚖️ Disclaimer Legal:</strong><br>
+            KM Checker es una herramienta de análisis educativo para verificación de coherencia de datos OBD2. 
+            Los resultados NO constituyen prueba legal de fraude. Úsalo solo en vehículos propios o con autorización. 
+            Para transacciones comerciales, consulta peritos certificados. Los fabricantes pueden restringir acceso a módulos por razones de seguridad.
+        </div>
+
+        <!-- FOOTER -->
+        <footer>
+            <p>🔒 KM CHECKER - Vehicle Mileage Verification System</p>
+            <p>© 2026 | Open Source Diagnostic Tool | USB OBD2 Adapter Required</p>
+        </footer>
+    </div>
+
+    <script>
+        let state = {
+            connected: false,
+            modules: {
+                'ECU Motor': { status: null, km: null },
+                'Tablero': { status: null, km: null },
+                'Caja Automática': { status: null, km: null },
+                'ABS': { status: null, km: null },
+                'Carrocería (BCM)': { status: null, km: null },
+                'Gateway': { status: null, km: null },
+                'Cluster': { status: null, km: null },
+                'Airbag': { status: null, km: null },
+                'Suspensión': { status: null, km: null }
+            }
+        };
+
+        function connectDevice() {
+            const connType = document.getElementById('connectionType').value;
+            
+            if (connType === 'sim') {
+                state.connected = true;
+                updateConnectionStatus(true);
+                document.getElementById('connectBtn').disabled = true;
+                document.getElementById('disconnectBtn').disabled = false;
+                document.getElementById('scanBtn').disabled = false;
+                document.getElementById('readInfoBtn').disabled = false;
+            }
+        }
+
+        function disconnectDevice() {
+            state.connected = false;
+            updateConnectionStatus(false);
+            document.getElementById('connectBtn').disabled = false;
+            document.getElementById('disconnectBtn').disabled = true;
+            document.getElementById('scanBtn').disabled = true;
+            document.getElementById('readInfoBtn').disabled = true;
+            resetUI();
+        }
+
+        function updateConnectionStatus(connected) {
+            const status = document.getElementById('connectionStatus');
+            const statusText = document.getElementById('statusText');
+            
+            if (connected) {
+                status.classList.remove('disconnected');
+                statusText.textContent = 'Conectado';
+            } else {
+                status.classList.add('disconnected');
+                statusText.textContent = 'Desconectado';
+            }
+        }
+
+        async function readVehicleInfo() {
+            if (!state.connected) return;
+            
+            // Simulación
+            setTimeout(() => {
+                document.getElementById('vinInput').value = 'WAUZZZ8V5BA123456';
+                document.getElementById('ecuInput').value = 'VW-01JX-030';
+            }, 500);
+        }
+
+        async function startScan() {
+            if (!state.connected) return;
+            
+            document.getElementById('progressSection').classList.add('active');
+            document.getElementById('resultsSummary').style.display = 'none';
+            document.getElementById('modulesTable').style.display = 'none';
+            
+            let progress = 0;
+            let accessible = 0;
+            let protected_modules = 0;
+            
+            for (let [module, data] of Object.entries(state.modules)) {
+                // Simular escaneo
+                await new Promise(resolve => setTimeout(resolve, 300));
+                
+                // Decisión aleatoria pero realista
+                const random = Math.random();
+                
+                if (random < 0.6) {
+                    // Accesible
+                    state.modules[module].status = 'accessible';
+                    state.modules[module].km = Math.floor(Math.random() * 300000) + 50000;
+                    addProgressItem(module, 'accessible', state.modules[module].km);
+                    accessible++;
+                } else if (random < 0.8) {
+                    // Protegido
+                    state.modules[module].status = 'protected';
+                    addProgressItem(module, 'protected', null);
+                    protected_modules++;
+                } else {
+                    // Sin respuesta
+                    state.modules[module].status = 'no_response';
+                    addProgressItem(module, 'no_response', null);
+                }
+                
+                progress = (Object.values(state.modules).filter(m => m.status).length / Object.keys(state.modules).length) * 100;
+                updateProgress(progress);
+            }
+            
+            // Mostrar resultados
+            document.getElementById('progressSection').classList.remove('active');
+            showResults(accessible, protected_modules);
+        }
+
+        function addProgressItem(module, status, km) {
+            const container = document.getElementById('progressItems');
+            const item = document.createElement('div');
+            item.className = `progress-item ${status}`;
+            
+            let icon = '❌';
+            let text = `${module}: sin respuesta`;
+            
+            if (status === 'accessible') {
+                icon = '✓';
+                text = `${module}: ${km} km`;
+            } else if (status === 'protected') {
+                icon = '⚠';
+                text = `${module}: protegido`;
+            }
+            
+            item.textContent = `${icon} ${text}`;
+            container.appendChild(item);
+        }
+
+        function updateProgress(percent) {
+            document.getElementById('progressBar').style.width = percent + '%';
+            document.getElementById('progressPercentage').textContent = Math.round(percent) + '%';
+        }
+
+        function showResults(accessible, protected_mods) {
+            const detected = accessible + protected_mods;
+            const total = Object.keys(state.modules).length;
+            
+            document.getElementById('modulesDetected').textContent = detected;
+            document.getElementById('modulesAccessible').textContent = accessible;
+            document.getElementById('modulesRestricted').textContent = total - detected;
+            
+            // Determine coherence
+            if (accessible >= 5) {
+                document.getElementById('coherenceLevel').textContent = 'ALTA';
+            } else if (accessible >= 3) {
+                document.getElementById('coherenceLevel').textContent = 'MEDIA';
+            } else {
+                document.getElementById('coherenceLevel').textContent = 'LIMITADA';
+            }
+            
+            document.getElementById('resultsSummary').style.display = 'grid';
+            displayModulesTable();
+            document.getElementById('analyzeBtn').disabled = false;
+        }
+
+        function displayModulesTable() {
+            const tbody = document.getElementById('modulesList');
+            tbody.innerHTML = '';
+            
+            for (let [module, data] of Object.entries(state.modules)) {
+                const row = tbody.insertRow();
+                const cellModule = row.insertCell(0);
+                const cellStatus = row.insertCell(1);
+                const cellKm = row.insertCell(2);
+                
+                cellModule.textContent = module;
+                
+                if (data.status === 'accessible') {
+                    cellStatus.innerHTML = '<div class="module-status"><span class="status-icon success">✅</span><span>Accesible</span></div>';
+                    cellKm.textContent = data.km ? data.km.toLocaleString() + ' km' : '--';
+                } else if (data.status === 'protected') {
+                    cellStatus.innerHTML = '<div class="module-status"><span class="status-icon warning">⚠️</span><span>Protegido</span></div>';
+                    cellKm.textContent = '--';
+                } else if (data.status === 'no_response') {
+                    cellStatus.innerHTML = '<div class="module-status"><span class="status-icon error">❌</span><span>Sin respuesta</span></div>';
+                    cellKm.textContent = '--';
+                } else {
+                    cellStatus.innerHTML = '<div class="module-status"><span class="status-icon error">--</span><span>No escaneado</span></div>';
+                    cellKm.textContent = '--';
+                }
+            }
+            
+            document.getElementById('modulesTable').style.display = 'table';
+        }
+
+        function analyzeResults() {
+            alert('Análisis detallado: Los módulos accesibles muestran coherencia en datos. Consulta el informe completo.');
+        }
+
+        function resetUI() {
+            document.getElementById('progressSection').classList.remove('active');
+            document.getElementById('resultsSummary').style.display = 'none';
+            document.getElementById('modulesTable').style.display = 'none';
+            document.getElementById('progressItems').innerHTML = '';
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('vinInput').value = '';
+            document.getElementById('ecuInput').value = '';
+        }
+    </script>
+</body>
+</html>

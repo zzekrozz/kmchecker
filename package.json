@@ -1,34 +1,6 @@
 {
   "name": "km-checker-pro",
   "version": "2.0.0",
-  "description": "Vehicle Mileage Verification System - OBD2 multi-module analyzer",
-  "main": "index.html",
-  "scripts": {
-    "start": "python -m http.server 8000",
-    "dev": "npx http-server",
-    "deploy": "vercel"
-  },
-  "keywords": [
-    "OBD2",
-    "vehicle",
-    "diagnosis",
-    "mileage",
-    "automotive",
-    "WebSerial",
-    "ELM327"
-  ],
-  "author": "Your Name",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/yourusername/km-checker-pro.git"
-  },
-  "bugs": {
-    "url": "https://github.com/yourusername/km-checker-pro/issues"
-  },
-  "homepage": "https://github.com/yourusername/km-checker-pro#readme",
-  "devDependencies": {},
-  "engines": {
-    "node": ">=14.0.0"
-  }
+  "description": "Vehicle Mileage Verification System",
+  "private": true
 }
